@@ -151,7 +151,6 @@ myChart1.setOption(option);
 
     var pro=params.name+'省';
     var addr="https://lab.isaaclin.cn/nCoV/api/area?latest=0&province="+pro;
-    alert(pro);
     $.get(addr, function (res) {
     var province = []
     function formatDate(now) { 
