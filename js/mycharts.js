@@ -7,14 +7,7 @@ myChart.showLoading()
 // 指定图表的配置项和数据
 var option = {
   title: {
-      text: '全国新冠肺炎实时疫情',
-      subtext: '数据来源于网络，仅供测试使用',
-      //sublink: 'https://lab.isaaclin.cn/nCoV/zh',
-      left: "center",
-      textStyle: {
-          color: "teal",
-          fontSize: 40,
-      }
+      
   },
     tooltip : {
         trigger: 'item'
