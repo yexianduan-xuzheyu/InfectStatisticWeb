@@ -76,12 +76,47 @@ $.get("https://lab.isaaclin.cn/nCoV/api/area?latest=1", function (res) {
     for (let i=0; i<res.results.length; i++){
         province.push({
             name : res.results[i].provinceShortName,
-            value: res.results[i].confirmedCount,
+            value: res.results[i].currentConfirmedCount,
         })
     }
     //console.log(province)
     //console.log(666)
-
+	 var count=0;
+for (let i=0; i<res.results.length; i++){
+	if(res.results[i].countryName=="中国")
+	   count=count+res.results[i].currentConfirmedCount;
+	}
+   document.getElementById("currentConfirmedCount").innerHTML=count;
+   var count1=0;
+for (let i=0; i<res.results.length; i++){
+	if(res.results[i].countryName=="中国")
+   	   count1=count1+res.results[i].suspectedCount;
+   	}
+      document.getElementById("suspectedCount").innerHTML=count1;
+	var count2=0;
+for (let i=0; i<res.results.length; i++){
+	if(res.results[i].countryName=="中国")
+	  	   count2=count2+res.results[i].seriousCount;
+	  	}
+	     document.getElementById("seriousCount").innerHTML=count2;
+	var count3=0;
+for (let i=0; i<res.results.length; i++){
+	if(res.results[i].countryName=="中国")
+		 	   count3=count3+res.results[i].curedCount;
+		 	}
+		    document.getElementById("curedCount").innerHTML=count3;
+	var count4=0;
+for (let i=0; i<res.results.length; i++){
+	if(res.results[i].countryName=="中国")
+				   count4=count4+res.results[i].confirmedCount;
+				}
+			   document.getElementById("confirmedCount").innerHTML=count4;
+	var count5=0;
+for (let i=0; i<res.results.length; i++){
+	if(res.results[i].countryName=="中国")
+				   count5=count5+res.results[i].deadCount
+				}
+			   document.getElementById("deadCount").innerHTML=count5;
     myChart.hideLoading()
     myChart.setOption({
         series: [{
@@ -91,5 +126,7 @@ $.get("https://lab.isaaclin.cn/nCoV/api/area?latest=1", function (res) {
     })
 
 })
+
+
 
 
