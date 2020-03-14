@@ -177,10 +177,24 @@
 
     <script type="text/javascript" src="../js/mycharts.js"></script>
 	<script>
-	  let el = document.getElementById('tab-toggle');
-	  el.onchange = function (e) {
-	    document.write(e.target.checked)
-	  }
+	let el = document.getElementById('tab-toggle');
+		  el.onchange = function (e) {
+		    if( e.target.checked)
+			{
+				var new_element=document.createElement("script");
+				new_element.setAttribute("type","text/javascript");
+				new_element.setAttribute("src","../js/mycharts1.js");
+				document.body.appendChild(new_element);
+			}
+			else
+			{
+				var new_element=document.createElement("script");
+				new_element.setAttribute("type","text/javascript");
+				new_element.setAttribute("src","../js/mycharts.js");
+				document.body.appendChild(new_element);
+			}
+			 
+		  }
 	</script>
 	
 </body>
