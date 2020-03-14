@@ -57,55 +57,6 @@ var option = {
 
 };
 myChart.setOption(option)
-
-
-// 基于准备好的dom，初始化echarts实例
-var myChart1 = echarts.init(document.getElementById('line'));
-//myChart1.showLoading()
-// 指定图表的配置项和数据
-var option = {
-    title: {
-        text: '疫情折线图'
-    },
-    tooltip: {},
-    toolbox: {
-
-        show : true,
-
-        feature : {
-
-            mark : {show: true},
-
-            dataView : {show: true, readOnly: false},
-
-            magicType : {show: true, type: ['line', 'bar']},
-
-            restore : {show: true},
-
-            saveAsImage : {show: true}
-
-        }
-
-    },
-    legend: {
-        data:['现有确诊','现有疑似']
-    },
-    xAxis: {
-        data: []
-    },
-    yAxis: {},
-    series: [{
-        name: '现有确诊',
-        type: 'line',
-        data: [],
-        
-    }]
-};
-// 使用刚指定的配置项和数据显示图表。
-myChart1.setOption(option);
-
-
-
 $.get("https://lab.isaaclin.cn/nCoV/api/area?latest=1", function (res) {
     //console.log(res.results);
     //console.log(res.results[0].currentConfirmedCount + res.results[0].provinceShortName)
@@ -162,60 +113,112 @@ for (let i=0; i<res.results.length; i++){
             data: province
         }]
     })
-    myChart.on('click', function (params) {
-        alert(params.dataIndex);
-        $.get("https://lab.isaaclin.cn/nCoV/api/area?latest=0&province=湖北省", function (res) {
-    //console.log(res.results);
-    //console.log(res.results[0].currentConfirmedCount + res.results[0].provinceShortName)
-    alert("aaa");
+    
+
+})
+myChart.on('click', function (params) {
+    // 基于准备好的dom，初始化echarts实例
+var myChart1 = echarts.init(document.getElementById('line'));
+//myChart1.showLoading()
+// 指定图表的配置项和数据
+var option = {
+    title: {
+        text: '疫情折线图'
+    },
+    tooltip: {},
+    toolbox: {
+        show : true,
+        feature : {
+            mark : {show: true},
+            dataView : {show: true, readOnly: false},
+            magicType : {show: true, type: ['line', 'bar']},
+            restore : {show: true},
+            saveAsImage : {show: true}
+        }
+    },
+    legend: {
+        data:['现有确诊','治愈人数']
+    },
+    xAxis: {
+        data: []
+    },
+    yAxis: {},
+    
+};
+myChart1.showLoading();
+// 使用刚指定的配置项和数据显示图表。
+myChart1.setOption(option);
+
+    var pro=params.name+'省';
+    var addr="https://lab.isaaclin.cn/nCoV/api/area?latest=0&province="+pro;
+    alert(pro);
+    $.get(addr, function (res) {
     var province = []
     function formatDate(now) { 
-        var year=now.getFullYear();  //取得4位数的年份
-        var month=now.getMonth()+1;  //取得日期中的月份，其中0表示1月，11表示12月
-        var date=now.getDate();      //返回日期月份中的天数（1到31）
-        return month+"-"+date;
+    var year=now.getFullYear();  //取得4位数的年份
+    var month=now.getMonth()+1;  //取得日期中的月份，其中0表示1月，11表示12月
+    var date=now.getDate();      //返回日期月份中的天数（1到31）
+    return month+"-"+date;
+}
+var dates=[];    
+var ip_value=[];//确认人数数据
+var cure_value=[];//疑似人数数据
+for(let i=0,j=10;i<j;i++){
+    var tDate = res.results[i].updateTime;
+    var d=new Date(tDate);//创建一个指定的日期对象
+    var date=formatDate(d);//生成日期
+    var length=dates.push(date);
+    if(dates[length-2]==date){
+        dates.pop();
+        j++;
     }
-    var dates=[];    
-    var value=[];
-    for(let i=0,j=10;i<j;i++){
-        var tDate = res.results[i].updateTime;
-        var d=new Date(tDate);//创建一个指定的日期对象
-        var date=formatDate(d);//生成日期
-        var length=dates.push(date);
-        if(dates[length-2]==date){
-            dates.pop();
-            j++;
-        }
-        else{
-            value.push({
-                name : res.results[i].provinceShortName,
-                value: res.results[i].currentConfirmedCount,
-            })
-        }
-        
+    else{
+        ip_value.push({
+            name : res.results[i].provinceShortName,
+            value: res.results[i].currentConfirmedCount,
+        })
+        cure_value.push({
+            name : res.results[i].provinceShortName,
+            value: res.results[i].curedCount,
+        })
     }
+    
+}
 
-    for(let i=dates.length;i>=0;i--){
-        console.log(dates[i]);
-    }
+for(let i=dates.length;i>=0;i--){
+    console.log(dates[i]);
+}
 
-    dates.reverse();
-    value.reverse();
-    myChart1.setOption({
-        xAxis: {
-            data:dates
+dates.reverse();
+ip_value.reverse();
+cure_value.reverse();
+myChart1.setOption({
+    xAxis: {
+        data:dates
+    },
+    series: [{
+        name: "现有确诊",
+        type:'line',
+        data: ip_value
+    },
+    {
+        name: "治愈人数",
+        type:'line',
+        data: cure_value,
+        itemStyle: {
+            normal: {
+                color: '#8cd5c2', //改变折线点的颜色
+                lineStyle: {
+                    color: '#8cd5c2' //改变折线颜色
+                }
+            }
         },
-        series: [{
-            name: "现有确诊",
-            data: value
-        }]
-    })
-
+    }
+]
 })
-    });
-
+myChart1.hideLoading();
 })
-
+});
 
 
 
