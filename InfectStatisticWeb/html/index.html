@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>实时数据</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <!-- 引入 echarts.js -->
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    <!--引入中国地图-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+	<style>
+	.switch-wrap {
+	  background-color: #f8f9fa;
+	  text-align: center;
+	  padding: 20px;
+	}
+	
+	.switch-wrap input {
+	  display: none;
+	}
+	
+	.switch-tab {
+	  height: 40px;
+	  display: block;
+	  border-radius: 6px;
+	  background-color: #e3e6eb;
+	  padding: 2px;
+	}
+	
+	.switch-tab::before {
+	  content: "现有确诊";
+	  font-weight: bold;
+	  height: 100%;
+	  width: 50%;
+	  left: 0;
+	  z-index: 1;
+	  display: inline-flex;
+	  position: relative;
+	  align-items: center;
+	  justify-content: center;
+	  background-color: #ffffff;
+	  border-radius: 6px;
+	  transition: all .2s ease
+	}
+	
+#tab-toggle:checked + .switch-tab::before {
+	  left: 50%;
+	  content: "累计确诊";
+	  transition: all .2s ease;
+	}
+	
+#tab-toggle:checked + .switch-tab::after {
+	  left: -50%;
+	  content: "现有确诊";
+	}
+	
+	.switch-tab::after {
+	  content: "累计确诊";
+	  font-weight: bold;
+	  z-index: 0;
+	  height: 100%;
+	  width: 50%;
+	  left: 0;
+	  position: relative;
+	  display: inline-flex;
+	  align-items: center;
+	  justify-content: center;
+	  border-radius: 6px;
+	}
+	.component-container {
+		width: 730px;
+		min-width: 700px;
+		background-color: #fff;
+		margin: 20px auto 0;
+		padding: 15px;
+		border-radius: 13px
+	}
+	.statistics {
+		height: 150px
+	}
+	.container {
+		width: 100%;
+		padding-right: 15px;
+		padding-left: 15px;
+		margin-right: auto;
+		margin-left: auto
+	}
+	.row {
+		display: -ms-flexbox;
+		display: flex;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+		margin-right: -15px;
+		margin-left: -15px
+	}
+	.statistics-title {
+		text-align: center;
+		font-size: 20px;
+		font-weight: 700;
+		color: #0faeb5;
+		margin: 0
+	}
+	.col {
+		-ms-flex-preferred-size: 0;
+		flex-basis: 0;
+		-ms-flex-positive: 1;
+		flex-grow: 1;
+		max-width: 100%
+	}
+	.statistics-data {
+		font-size: 24px;
+		font-weight: 700
+	}
+	.divider {
+		height: 2em;
+		border-left: 1px solid #d4d4d4
+	}
+	.align-self-center {
+		-ms-flex-item-align: center !important;
+		align-self: center !important
+	}
+	
+	</style>
+</head>
+<div id="wrap" style="margin: 0;">
+<body>
+	<div id="header">
+		<h1 style="text-align:center;color: #00646b;margin: 0;">全国新冠肺炎实时疫情</h1>
+		<h5 style="text-align: center;color: #d4d4d4;margin: 0;">数据来源于网络，仅供测试使用</h5	>
+	</div>
+  <div id="app" style="text-align: center;">
+      <div class="component-container">
+        <div class="statistics container">
+    <div class="row statistics-content">
+      <div class="col">
+        <span>现有确诊</span><br>
+        <span id="currentConfirmedCount" class="statistics-data" style="color: #ff6957;">0</span>
+      </div>
+      <div class="divider align-self-center"></div>
+      <div class="col">
+        <span>现有疑似</span><br>
+        <span id="suspectedCount" class="statistics-data" style="color: #ec9222;">0</span>
+      </div>
+      <div class="divider align-self-center"></div>
+      <div class="col">
+        <span>现有重症</span><br>
+        <span id="seriousCount" class="statistics-data" style="color: #476ca0;">0</span>
+      </div>
+    </div>
+    <div class="row statistics-content">
+      <div class="col">
+        <span>累计确诊</span><br>
+        <span id="confirmedCount" class="statistics-data" style="color: #e83132;">0</span>
+      </div>
+      <div class="divider align-self-center"></div>
+      <div class="col">
+        <span>累计治愈</span><br>
+        <span id="curedCount" class="statistics-data" style="color: #0faeb5;">0</span>
+      </div>
+      <div class="divider align-self-center"></div>
+      <div class="col">
+        <span>累计死亡</span><br>
+        <span id="deadCount" class="statistics-data" style="color: #4c5054;">0</span>
+      </div>
+    </div>
+  </div>
+        <div class="switch-wrap">
+    <input id="tab-toggle" type="checkbox" />
+    <label for="tab-toggle" class="switch-tab"></label>
+  </div>
+  <div id="map" class="map"></div>
+      </div>
+    </div>
+        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+		<div id="main" style="width: 100%;height:800px;"></div>
+		<div id="line" style="width: 50%;height:500px;margin: 0 auto;"></div>
+	</div>
+
+    <script type="text/javascript" src="../js/mycharts.js"></script>
+	<script>
+	let el = document.getElementById('tab-toggle');
+		  el.onchange = function (e) {
+		    if( e.target.checked)
+			{
+				var new_element=document.createElement("script");
+				new_element.setAttribute("type","text/javascript");
+				new_element.setAttribute("src","../js/mycharts1.js");
+				document.body.appendChild(new_element);
+			}
+			else
+			{
+				var new_element=document.createElement("script");
+				new_element.setAttribute("type","text/javascript");
+				new_element.setAttribute("src","../js/mycharts.js");
+				document.body.appendChild(new_element);
+			}
+			 
+		  }
+	</script>
+	
+</body>
+</html>
